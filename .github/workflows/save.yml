@@ -17,7 +17,6 @@ jobs:
 
       - name: Sauvegarder le fichier
         run: |
-          # On décode le contenu base64 envoyé par l'éditeur
           echo "${{ github.event.client_payload.content }}" | base64 -d > "${{ github.event.client_payload.filename }}"
           
       - name: Commit et Push
@@ -27,4 +26,7 @@ jobs:
           git add "${{ github.event.client_payload.filename }}"
           # On vérifie s'il y a des changements avant de commit
           git diff --quiet && git diff --staged --quiet || git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}"
-          git push
+          
+          # On utilise directement le token dans l'URL pour s'authentifier
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUBCODE2 }}@github.com/gourbi-solido/etudes.git
+          git push origin HEAD:main # ou master
