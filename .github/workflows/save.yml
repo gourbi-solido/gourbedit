@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: gourbi-solido/etudes
-          token: ${{ secrets.PAT_SOLIDO }}
+          token: ${{ secrets.GITHUBCODE2 }}
           ref: main # ou master selon votre branche
 
       - name: Sauvegarder le fichier
