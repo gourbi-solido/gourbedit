@@ -1,0 +1,27 @@
+name: Sauvegarde depuis l'éditeur
+
+on:
+  repository_dispatch:
+    types: [save_fiche]
+
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du repo etudes
+        uses: actions/checkout@v4
+        with:
+          repository: gourbi-solido/etudes
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sauvegarder le fichier
+        run: |
+          echo "${{ github.event.client_payload.content }}" | base64 -d > "${{ github.event.client_payload.filename }}"
+          
+      - name: Commit et Push
+        run: |
+          git config --global user.name "Editeur Solido Bot"
+          git config --global user.email "bot@solido.local"
+          git add "${{ github.event.client_payload.filename }}"
+          git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}"
+          git push
