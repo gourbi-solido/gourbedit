@@ -26,7 +26,7 @@ jobs:
           git config --global user.name "Editeur Solido Bot"
           git config --global user.email "bot@solido.local"
           
-          # Injection explicite du token dans l'URL distante pour authentifier le push
+          # Force l'utilisation du token GITHUBCODE2 pour l'authentification Git
           git remote set-url origin https://x-access-token:${{ secrets.GITHUBCODE2 }}@github.com/gourbi-solido/etudes.git
           
           git add "${{ github.event.client_payload.filename }}"
