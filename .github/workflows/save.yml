@@ -4,35 +4,59 @@ on:
   repository_dispatch:
     types: [save_fiche]
 
+# Une seule sauvegarde à la fois (évite les conflits de push)
+concurrency:
+  group: save-fiche
+  cancel-in-progress: false
+
 jobs:
   save:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout du repo etudes
         uses: actions/checkout@v4
         with:
           repository: gourbi-solido/etudes
-          token: ${{ secrets.GITHUBCODE3 }}
+          token: ${{ secrets.GITHUBCODE2 }}
           ref: main
 
       - name: Valider et sauvegarder le fichier
         env:
           FILENAME: ${{ github.event.client_payload.filename }}
           CONTENT: ${{ github.event.client_payload.content }}
+          ENCODING: ${{ github.event.client_payload.encoding }}
         run: |
+          set -euo pipefail
+
           # Nom simple uniquement : pas de dossier, pas de "..", extension autorisée
           if ! [[ "$FILENAME" =~ ^[A-Za-z0-9_-][A-Za-z0-9._-]*\.(html|md|json)$ ]]; then
-            echo "Nom de fichier invalide" >&2
+            echo "::error title=Nom de fichier invalide::[$FILENAME] - utilisez lettres, chiffres, point, tiret, underscore (extension .html)"
             exit 1
           fi
-          printf '%s' "$CONTENT" | base64 -d > "$FILENAME"
+          if [ -z "$CONTENT" ]; then
+            echo "::error title=Contenu vide::Aucun contenu reçu dans client_payload.content"
+            exit 1
+          fi
+
+          if [ "${ENCODING:-plain}" = "gzip" ]; then
+            printf '%s' "$CONTENT" | base64 -d | gunzip > "$FILENAME"
+          else
+            printf '%s' "$CONTENT" | base64 -d > "$FILENAME"
+          fi
+
+          if [ ! -s "$FILENAME" ]; then
+            echo "::error title=Fichier vide::Le décodage de $FILENAME a produit un fichier vide"
+            exit 1
+          fi
+          echo "Fichier décodé : $FILENAME ($(wc -c < "$FILENAME") octets)"
 
       - name: Commit et Push
         env:
           FILENAME: ${{ github.event.client_payload.filename }}
         run: |
+          set -euo pipefail
           git config user.name "Editeur Solido Bot"
           git config user.email "bot@solido.local"
           git add -- "$FILENAME"
@@ -41,5 +65,10 @@ jobs:
             exit 0
           fi
           git commit -m "Ajout de la fiche : $FILENAME"
-          git pull --rebase origin main
-          git push origin main
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && exit 0
+            echo "Tentative $i échouée, nouvel essai..."
+            sleep 3
+          done
+          echo "::error title=Push impossible::Le push vers gourbi-solido/etudes a échoué (droits du jeton GITHUBCODE2 : Contents lecture/écriture ?)"
+          exit 1
