@@ -21,11 +21,14 @@ jobs:
         run: |
           echo "${{ github.event.client_payload.content }}" | base64 -d > "${{ github.event.client_payload.filename }}"
           
-      - name: Commit et Push automatique
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          repository: .
-          commit_user_name: "Editeur Solido Bot"
-          commit_user_email: "bot@solido.local"
-          commit_message: "Ajout de la fiche : ${{ github.event.client_payload.filename }}"
-          file_pattern: "${{ github.event.client_payload.filename }}"
+      - name: Commit et Push
+        run: |
+          git config --global user.name "Editeur Solido Bot"
+          git config --global user.email "bot@solido.local"
+          
+          # Injection explicite du token dans l'URL distante pour authentifier le push
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUBCODE2 }}@github.com/gourbi-solido/etudes.git
+          
+          git add "${{ github.event.client_payload.filename }}"
+          git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}" || echo "Pas de changement"
+          git push
