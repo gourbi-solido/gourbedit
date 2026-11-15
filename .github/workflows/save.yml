@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: gourbi-solido/etudes
-          token: ${{ secrets.GITHUBCODE2 }}
+          token: ${{ secrets.GITHUBCODE3 }}
           ref: main
 
       - name: Valider et sauvegarder le fichier
