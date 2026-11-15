@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuel Utilisateur — Éditeur Visuel Solido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Styles pour l'impression */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .print-break { page-break-before: always; }
+            .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl { box-shadow: none !important; }
+            .border { border-color: #ccc !important; }
+            .bg-stone-100 { background: white !important; }
+            .bg-stone-900 { background: #f3f4f6 !important; color: black !important; }
+            .text-amber-50 { color: black !important; }
+            .text-stone-400 { color: #666 !important; }
+            a { text-decoration: underline; color: black; }
+        }
+
+        /* Style pour simuler une capture d'écran d'interface */
+        .mockup-box {
+            background: #f8f9fa;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #374151;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased leading-relaxed">
+
+    <!-- En-tête -->
+    <header class="bg-stone-900 text-stone-100 py-12 px-6 shadow-md">
+        <div class="max-w-4xl mx-auto">
+            <div class="inline-block bg-amber-600 text-white font-bold px-3 py-1 rounded-lg text-sm tracking-wider shadow-inner mb-4">
+                SOLIDO
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-bold text-amber-50 mb-3 tracking-tight">Manuel Utilisateur</h1>
+            <p class="text-lg text-stone-400">Éditeur Visuel de Fiches d'Étude</p>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- Introduction -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">1</span>
+                Présentation Générale
+            </h2>
+            <p class="mb-4">
+                Bienvenue dans le manuel officiel de l'<strong>Éditeur Visuel de Fiches d'Étude Solido</strong>. Cet outil a été conçu pour vous permettre de créer, modifier et exporter des fiches d'étude complexes (tableaux, chronologies, galeries photos) sans écrire une seule ligne de code HTML.
+            </p>
+            
+            <div class="mockup-box mt-6">
+                <div class="flex items-center justify-between border-b border-gray-300 pb-2 mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-amber-600 text-white px-2 py-0.5 rounded font-bold text-xs">SOLIDO</span>
+                        <span class="font-bold text-gray-800">Éditeur Visuel de Fiches d'Étude</span>
+                    </div>
+                    <div class="flex gap-2 text-xs">
+                        <span class="border border-gray-400 px-2 py-1 rounded bg-gray-200">Mode Édition</span>
+                        <span class="border border-gray-400 px-2 py-1 rounded text-gray-500">Aperçu Réel</span>
+                    </div>
+                    <div class="flex gap-2 text-xs">
+                        <span class="bg-amber-500 text-white px-2 py-1 rounded">+ Nouvelle fiche</span>
+                        <span class="border border-gray-400 px-2 py-1 rounded">Ouvrir</span>
+                        <span class="bg-green-600 text-white px-2 py-1 rounded">Télécharger</span>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-1/4 bg-gray-200 rounded p-2 text-gray-700">
+                        <div class="font-bold text-xs uppercase mb-2">Rubriques</div>
+                        <div class="bg-white p-1 mb-1 rounded border border-gray-300">1. En-tête</div>
+                        <div class="bg-white p-1 mb-1 rounded border border-gray-300">2. Tableau</div>
+                        <div class="bg-white p-1 mb-1 rounded border border-gray-300">3. Boîtes / Photos</div>
+                        <div class="bg-white p-1 mb-1 rounded border border-gray-300">4. Pied de page</div>
+                    </div>
+                    <div class="w-3/4 bg-gray-100 rounded p-4 flex flex-col justify-center items-center text-gray-400 border border-dashed border-gray-300">
+                        [ Zone de Travail Centrale ]<br>
+                        Remplissez les formulaires et le tableau ici.
+                    </div>
+                </div>
+            </div>
+            
+            <p class="mt-4 text-sm text-stone-600">
+                L'interface se divise en trois zones principales : la barre d'outils (en haut), le menu de navigation rapide (à gauche) et la zone de travail (au centre).
+            </p>
+        </section>
+
+        <!-- Gérer les fichiers -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-6 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">2</span>
+                Gérer les Fichiers
+            </h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-stone-800 flex items-center gap-2 mb-2">
+                        <span class="text-amber-600 font-bold text-xl">+</span> Nouvelle fiche
+                    </h3>
+                    <p class="text-stone-600 ml-7">
+                        Réinitialise complètement l'éditeur pour partir d'une page blanche. <em>Sécurité :</em> Si vous avez déjà rempli des champs, une fenêtre de confirmation vous demandera si vous souhaitez vraiment perdre vos modifications.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-stone-800 flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Ouvrir un .html
+                    </h3>
+                    <p class="text-stone-600 ml-7">
+                        Permet de charger une fiche Solido existante (au format <code class="bg-stone-100 px-1 rounded">.html</code>) pour la modifier.
+                        <br><strong class="text-amber-700">Astuce :</strong> Vous pouvez aussi glisser-déposer votre fichier <code class="bg-stone-100 px-1 rounded">.html</code> directement depuis votre explorateur Windows/Mac vers la fenêtre de l'éditeur.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-stone-800 flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Télécharger le HTML (Sauvegarde)
+                    </h3>
+                    <p class="text-stone-600 ml-7 mb-3">
+                        Génère et télécharge le fichier final, prêt à être publié sur le forum.
+                    </p>
+                    <div class="mockup-box ml-7 max-w-md">
+                        <div class="font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1">Enregistrer la fiche HTML</div>
+                        <div class="text-xs mb-1 text-gray-600">NOM DU FICHIER</div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="border border-amber-400 rounded p-1 bg-white flex-1">fiche_test</div>
+                            <span class="font-bold">.html</span>
+                        </div>
+                        <div class="text-xs text-gray-500 italic mb-3">Le bouton ci-dessous ouvrira la fenêtre native de votre système...</div>
+                        <div class="flex justify-end gap-2 text-xs">
+                            <span class="border border-gray-300 px-3 py-1 rounded bg-white">Annuler</span>
+                            <span class="bg-green-600 text-white px-3 py-1 rounded">Enregistrer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modes d'affichage -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">3</span>
+                Les Modes d'Affichage
+            </h2>
+            <p class="mb-4 text-stone-600">En haut au centre de la barre d'outils, deux boutons vous permettent de basculer entre deux modes :</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="border border-stone-200 rounded-xl p-4 bg-stone-50">
+                    <h4 class="font-bold text-stone-800 mb-1">Mode Édition</h4>
+                    <p class="text-sm text-stone-600">C'est le mode par défaut. Vous voyez les formulaires, les champs de texte et les boutons d'action.</p>
+                </div>
+                <div class="border border-stone-200 rounded-xl p-4 bg-stone-50">
+                    <h4 class="font-bold text-stone-800 mb-1">Aperçu Réel</h4>
+                    <p class="text-sm text-stone-600">Ce mode génère un aperçu fidèle de la fiche finale dans un navigateur. C'est ici que vous pouvez tester le zoom sur les photos et le diaporama.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1 -->
+        <div class="print-break"></div>
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">4</span>
+                Section 1 : En-tête & Intro
+            </h2>
+            <p class="mb-4 text-stone-600">Cette section définit les titres de votre page.</p>
+            <ul class="list-disc list-inside space-y-3 text-stone-700">
+                <li><strong>Titre de l'onglet</strong> : Ce qui s'affiche tout en haut de l'onglet du navigateur.</li>
+                <li><strong>Sous-titre</strong> : La ligne en italique sous le titre principal.</li>
+                <li><strong>Titre Principal (H1)</strong> : Le gros titre au centre de la page.</li>
+                <li><strong>Paragraphes d'introduction</strong> : Cliquez sur <em>+ Ajouter un paragraphe</em> pour créer un bloc de texte. Vous pouvez utiliser du HTML basique (ex: <code>&lt;b&gt;gras&lt;/b&gt;</code>).</li>
+            </ul>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">5</span>
+                Section 2 : Le Tableau Récapitulatif
+            </h2>
+            <p class="mb-6 text-stone-600">C'est le cœur de l'éditeur. Il permet de lister les variantes (Réf. ID, Couleur, Date, etc.).</p>
+            
+            <h3 class="text-lg font-semibold text-stone-800 mb-3 border-b border-stone-200 pb-2">5.1. Insérer une ligne à la bonne position</h3>
+            <p class="text-stone-600 mb-3">L'éditeur possède un sélecteur de position. Vous ne pouvez pas simplement ajouter une ligne à la fin, vous devez choisir <strong>où</strong> elle va s'insérer.</p>
+            
+            <div class="mockup-box mb-6 flex items-center gap-2">
+                <div class="border border-gray-300 bg-white px-2 py-1 rounded">◀</div>
+                <div class="text-xs">Insérer à la position <span class="bg-amber-100 text-amber-800 font-bold px-1 rounded">2</span> sur 5</div>
+                <div class="border border-gray-300 bg-white px-2 py-1 rounded">▼</div>
+                <div class="bg-amber-600 text-white px-3 py-1 rounded ml-2">▶ Insérer</div>
+            </div>
+
+            <ol class="list-decimal list-inside space-y-2 text-stone-700 mb-6 ml-2">
+                <li>Utilisez les flèches <strong>◀</strong> (monter) et <strong>▼</strong> (descendre) pour choisir la position.</li>
+                <li>Un trait ambre s'affiche dans le tableau pour vous montrer exactement où la ligne sera insérée.</li>
+                <li>Cliquez sur <strong>▶ Insérer</strong> pour créer la ligne.</li>
+                <li><em>Raccourci</em> : Vous pouvez aussi cliquer sur <strong>＋ insérer une ligne vide ici</strong> directement entre deux lignes existantes dans le tableau.</li>
+            </ol>
+
+            <h3 class="text-lg font-semibold text-stone-800 mb-3 border-b border-stone-200 pb-2">5.2. Remplir et Fusionner (Rowspan)</h3>
+            <p class="text-stone-600 mb-3">
+                Cliquez simplement dans les cases pour taper votre texte. Si plusieurs lignes partagent le même "Conditionnement", vous pouvez fusionner la cellule verticalement.
+            </p>
+            <p class="text-stone-600 mb-6">
+                Sur la ligne du dessous, sous le champ, cliquez sur le bouton <strong>Séparé</strong>. Il deviendra <strong>↑ Fusionné</strong> (en orange) et les cellules seront automatiquement collées à l'export.
+            </p>
+
+            <h3 class="text-lg font-semibold text-stone-800 mb-3 border-b border-stone-200 pb-2">5.3. Copier / Coller une ligne</h3>
+            <p class="text-stone-600 mb-3">
+                Pour dupliquer rapidement une variante existante :
+            </p>
+            <ol class="list-decimal list-inside space-y-2 text-stone-700 ml-2">
+                <li>Cliquez sur l'icône <strong>📋</strong> dans la colonne "Actions" de la ligne souhaitée.</li>
+                <li>Un bandeau ambre apparaît en haut du tableau.</li>
+                <li>Choisissez la position avec ◀ ▼ et cliquez sur <strong>▶ Coller ici</strong> (le bouton principal a changé de nom).</li>
+            </ol>
+        </section>
+
+        <!-- Section 3 -->
+        <div class="print-break"></div>
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">6</span>
+                Section 3 : Sections Chronologiques & Photos
+            </h2>
+            <p class="mb-6 text-stone-600">Cette section permet de détailler l'historique de la boîte (BAOT-IV, V, etc.) avec les photos.</p>
+            
+            <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 mb-6 text-center text-sm font-mono text-stone-600">
+                Section (ex: BAOT-IV) <span class="text-amber-500">→</span> Sous-boîte (ex: BAOT-IVa) <span class="text-amber-500">→</span> Variantes (ex: 46-01A) <span class="text-amber-500">→</span> Galerie Photos
+            </div>
+
+            <h3 class="text-lg font-semibold text-stone-800 mb-3 border-b border-stone-200 pb-2">6.1. Gérer les photos</h3>
+            <p class="text-stone-600 mb-3">Chaque variante possède une ou plusieurs galeries.</p>
+            
+            <div class="mockup-box mb-4">
+                <div class="flex justify-between items-center text-xs">
+                    <div>Galerie (0 photos) : <span class="border border-gray-300 px-2 py-1 bg-white rounded ml-2">Sous-titre galerie...</span></div>
+                    <div class="bg-amber-600 text-white px-2 py-1 rounded">+ Ajouter des photos (URL)</div>
+                </div>
+            </div>
+
+            <ol class="list-decimal list-inside space-y-2 text-stone-700 ml-2 mb-4">
+                <li>Cliquez sur <strong>+ Ajouter des photos (URL)</strong>.</li>
+                <li>Une fenêtre s'ouvre. Saisissez une <strong>Légende commune</strong> (le texte qui s'affichera sous l'image).</li>
+                <li><strong>Collez vos liens d'images</strong> (un lien par ligne, par exemple depuis Postimg).</li>
+                <li>Cliquez sur <strong>Ajouter ces photos</strong>.</li>
+            </ol>
+            <p class="text-sm text-stone-500 italic mb-4">Astuce : Une fois ajoutées, vous pouvez réorganiser les photos avec les petites flèches ‹ › au survol de l'image.</p>
+        </section>
+
+        <!-- Aperçu -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 text-sm">7</span>
+                Mode Aperçu : Zoom et Diaporama
+            </h2>
+            <p class="mb-4 text-stone-600">Lorsque vous êtes en <strong>Aperçu Réel</strong>, vous pouvez interagir avec les éléments comme sur le forum final :</p>
+            <ul class="list-disc list-inside space-y-2 text-stone-700">
+                <li><strong>Survol</strong> : Passez la souris sur une vignette pour l'agrandir (effet de zoom ×8).</li>
+                <li><strong>Diaporama</strong> : Cliquez sur une photo pour l'ouvrir en plein écran. Utilisez les flèches du clavier (←, →) ou les boutons de l'écran pour naviguer. Appuyez sur <kbd class="bg-stone-100 border border-stone-300 rounded px-1 shadow-sm text-xs">Échap</kbd> pour fermer.</li>
+            </ul>
+        </section>
+
+        <!-- Conseils -->
+        <section class="bg-amber-50 rounded-2xl p-8 border border-amber-200">
+            <h2 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Conseils et Astuces de Pro
+            </h2>
+            <ul class="space-y-3 text-amber-900">
+                <li class="flex items-start gap-2">
+                    <span class="font-bold text-amber-600 mt-0.5">•</span>
+                    <div><strong>Sauts de ligne dans le tableau</strong> : Pour aller à la ligne dans une case (ex: Remarques), appuyez simplement sur la touche <kbd class="bg-white border border-amber-300 rounded px-1 shadow-sm text-xs">Entrée</kbd>. La conversion se fera automatiquement à l'export.</div>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="font-bold text-amber-600 mt-0.5">•</span>
+                    <div><strong>Sauvegarde régulière</strong> : L'éditeur ne sauvegarde pas automatiquement. Pensez à cliquer sur <strong>Télécharger le HTML</strong> régulièrement pour éviter de perdre votre travail.</div>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="font-bold text-amber-600 mt-0.5">•</span>
+                    <div><strong>Images introuvables</strong> : Si vous voyez un cadre en pointillé ambre ou une image "introuvable", vérifiez que le lien de votre image est bien direct (il doit finir par <code>.jpg</code>, <code>.png</code>, etc.) et qu'il est accessible publiquement.</div>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-stone-200 text-stone-500 py-6 text-center text-sm mt-12 border-t border-stone-300 no-print">
+        <p>Manuel généré pour l'Éditeur Visuel de Fiches d'Étude Solido — Version 005.</p>
+    </footer>
+
+</body>
+</html>
