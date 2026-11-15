@@ -7,14 +7,15 @@ on:
 jobs:
   save:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout du repo etudes
         uses: actions/checkout@v4
         with:
           repository: gourbi-solido/etudes
-          # L'ASTUCE EST ICI : On dit à checkout d'utiliser le token directement pour le push
           token: ${{ secrets.GITHUBCODE2 }}
-          ref: main # ou master
+          ref: main
 
       - name: Sauvegarder le fichier
         run: |
@@ -24,6 +25,10 @@ jobs:
         run: |
           git config --global user.name "Editeur Solido Bot"
           git config --global user.email "bot@solido.local"
+          
+          # Configuration explicite de l'URL avec le token pour authentifier le push
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUBCODE2 }}@github.com/gourbi-solido/etudes.git
+          
           git add "${{ github.event.client_payload.filename }}"
           git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}" || echo "Pas de changement"
           git push
