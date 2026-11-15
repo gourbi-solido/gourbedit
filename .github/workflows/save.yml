@@ -12,14 +12,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: gourbi-solido/etudes
-          # On utilise votre secret GITHUBCODE2
+          # L'ASTUCE EST ICI : On dit à checkout d'utiliser le token directement pour le push
           token: ${{ secrets.GITHUBCODE2 }}
-          ref: main # Ou master, selon le nom de la branche principale de 'etudes'
-
-      - name: Configurer l'authentification Git
-        run: |
-          # On dit à Git d'utiliser le token pour toutes les requêtes vers github.com
-          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n "x-access-token:${{ secrets.GITHUBCODE2 }}" | base64)"
+          ref: main # ou master
 
       - name: Sauvegarder le fichier
         run: |
@@ -30,6 +25,5 @@ jobs:
           git config --global user.name "Editeur Solido Bot"
           git config --global user.email "bot@solido.local"
           git add "${{ github.event.client_payload.filename }}"
-          # On vérifie s'il y a des changements avant de commit
-          git diff --quiet && git diff --staged --quiet || git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}"
-          git push origin HEAD:main
+          git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}" || echo "Pas de changement"
+          git push
