@@ -17,18 +17,29 @@ jobs:
           token: ${{ secrets.GITHUBCODE2 }}
           ref: main
 
-      - name: Sauvegarder le fichier
+      - name: Valider et sauvegarder le fichier
+        env:
+          FILENAME: ${{ github.event.client_payload.filename }}
+          CONTENT: ${{ github.event.client_payload.content }}
         run: |
-          echo "${{ github.event.client_payload.content }}" | base64 -d > "${{ github.event.client_payload.filename }}"
-          
+          # Nom simple uniquement : pas de dossier, pas de "..", extension autorisée
+          if ! [[ "$FILENAME" =~ ^[A-Za-z0-9_-][A-Za-z0-9._-]*\.(html|md|json)$ ]]; then
+            echo "Nom de fichier invalide" >&2
+            exit 1
+          fi
+          printf '%s' "$CONTENT" | base64 -d > "$FILENAME"
+
       - name: Commit et Push
+        env:
+          FILENAME: ${{ github.event.client_payload.filename }}
         run: |
-          git config --global user.name "Editeur Solido Bot"
-          git config --global user.email "bot@solido.local"
-          
-          # Force l'utilisation du token GITHUBCODE2 pour l'authentification Git
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUBCODE2 }}@github.com/gourbi-solido/etudes.git
-          
-          git add "${{ github.event.client_payload.filename }}"
-          git commit -m "Ajout de la fiche : ${{ github.event.client_payload.filename }}" || echo "Pas de changement"
-          git push
+          git config user.name "Editeur Solido Bot"
+          git config user.email "bot@solido.local"
+          git add -- "$FILENAME"
+          if git diff --cached --quiet; then
+            echo "Pas de changement"
+            exit 0
+          fi
+          git commit -m "Ajout de la fiche : $FILENAME"
+          git pull --rebase origin main
+          git push origin main
