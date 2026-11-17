@@ -255,7 +255,7 @@
                                 <p class="text-xs text-stone-500 mt-0.5">Gérez chaque type de boîte (BAOT-IV, V, VI...) et les galeries photos de chaque référence.</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <button type="button" onclick="autoChapters()" title="Crée un chapitre pour chaque Réf. ID du tableau qui n'en a pas encore, et relie le tableau aux chapitres" class="bg-white hover:bg-amber-50 text-amber-800 border border-amber-600 text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition">
+                                <button type="button" id="btn-auto-chapters" onclick="autoChapters()" title="Crée un chapitre pour chaque Réf. ID du tableau qui n'en a pas encore, et relie le tableau aux chapitres" class="bg-white hover:bg-amber-50 text-amber-800 border border-amber-600 text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
                                     🔗 Chapitres auto (par Réf. ID)
                                 </button>
                                 <button type="button" onclick="addChronoSection()" class="bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition">
@@ -3062,5 +3062,175 @@ ${state.footerDate && state.footerDate.trim() ? `            <p${state.footnoteP
                 .replace(/>/g, '&gt;');
         }
     </script>
+<!-- ===== BOUTON AUTONOME : créer les sections manquantes (par Réf. ID) ===== -->
+<!-- ===== BOUTON AUTONOME : créer les sections manquantes (par Réf. ID) ===== -->
+<!-- ===== BOUTON AUTONOME : créer les sections manquantes + gestion d'état de "Chapitres auto" ===== -->
+<script>
+(function(){
+  function norm(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim(); }
+  function plain(html){ return norm(String(html||'').replace(/<br\s*\/?>/gi,' ').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ')); }
+  function toast(msg){ (typeof showToast==='function') ? showToast(msg) : alert(msg); }
+  function getState(){ return (typeof state !== 'undefined' && state) ? state : null; }
+
+  // --- Le bouton "Chapitres auto" : id + état selon le nombre de sections ---
+  const AUTO_TITLE_ON  = "Crée un chapitre pour chaque Réf. ID du tableau qui n'en a pas encore.";
+  const AUTO_TITLE_OFF = "Désactivé : des sections existent déjà. Supprimez toutes les sections pour le réactiver.";
+  function getAutoBtn(){
+    let b = document.getElementById('btn-auto-chapters');
+    if (!b) {
+      b = Array.from(document.querySelectorAll('button')).find(x => /Chapitres auto/i.test(x.textContent));
+      if (b) b.id = 'btn-auto-chapters';
+    }
+    return b;
+  }
+  function syncAutoBtn(){
+    const b = getAutoBtn(); if (!b) return;
+    const st = getState();
+    const hasSections = !!(st && st.chronoSections && st.chronoSections.length > 0);
+    b.disabled = hasSections;
+    b.title = hasSections ? AUTO_TITLE_OFF : AUTO_TITLE_ON;
+    b.classList.toggle('opacity-50', hasSections);
+    b.classList.toggle('cursor-not-allowed', hasSections);
+    b.style.opacity = hasSections ? '0.5' : '';
+    b.style.cursor  = hasSections ? 'not-allowed' : '';
+  }
+
+  // --- Détection des Réf. ID du tableau / sections existantes ---
+  function refIdColIndex(){
+    const st = getState(); if (!st) return -1;
+    const cols = st.tableCols || [];
+    for (let i=0;i<cols.length;i++){
+      const l = norm(cols[i].label);
+      if (/^ref\.? ?id$/.test(l) || /^ref\.? ?commerciale$/.test(l)) return i;
+    }
+    return -1;
+  }
+  function tableRefIdsInOrder(){
+    const st = getState(); const ci = refIdColIndex();
+    if (ci<0 || !st) return [];
+    const out=[];
+    (st.tableRows||[]).forEach(r=>{
+      const c = r.cells && r.cells[ci];
+      const v = c ? plain(c.t) : '';
+      if (v && !out.includes(v)) out.push(v);
+    });
+    return out;
+  }
+  function sectionKeyOf(sec){
+    if (sec.id) return norm(sec.id).replace(/^chap-/,'');
+    return norm(sec.title).replace(/^ref\.? ?id ?: ?/,'');
+  }
+  function existingKeys(){
+    const st = getState(); const set = new Set();
+    (st.chronoSections||[]).forEach(sec=>{
+      if (sec.id) set.add(norm(sec.id).replace(/^chap-/,''));
+      if (sec.title) set.add(norm(sec.title).replace(/^ref\.? ?id ?: ?/,''));
+      (sec.blocks||[]).forEach(b=>{
+        [b.blockName, b.blockGroupRef].forEach(x=>{
+          const n = norm(x); if(!n) return;
+          set.add(n);
+          const mm = n.match(/id ?: ?(\S+)/); if (mm) set.add(mm[1]);
+          const m2 = n.match(/ref\.? ?id ?: ?(\S+)/); if (m2) set.add(m2[1]);
+        });
+        (b.variants||[]).forEach(v=>{
+          const n = norm(v.title); if(!n) return;
+          set.add(n);
+          const mm = n.match(/ref\.? ?id ?: ?(\S+)/); if (mm) set.add(mm[1]);
+        });
+      });
+    });
+    return set;
+  }
+
+  // --- Action : créer les sections manquantes ---
+  function run(){
+    const st = getState();
+    if (!st) { toast('Éditeur non initialisé.'); return; }
+
+    const ids = tableRefIdsInOrder();
+    if (!ids.length) { toast('Aucune colonne « Réf. ID » trouvée dans le tableau.'); return; }
+
+    const have = existingKeys();
+    const missing = ids.filter(id => !have.has(norm(id)));
+
+    if (!missing.length) {
+      toast('✔ Toutes les Réf. ID du tableau ont déjà une section.');
+      syncAutoBtn();
+      return;
+    }
+
+    missing.forEach(id=>{
+      const sec = {
+        id: 'chap-' + id,
+        title: 'Réf. ID : ' + id,
+        dateBadge: '',
+        flat: false, noCard: false,
+        blocks: [{
+          blockName: '', blockDates: '', blockGroupRef: '', blockGroupDate: '',
+          variants: [{ title: 'Réf. ID : ' + id, subtitle: '', galleries: [{ legend: '', photos: [] }] }]
+        }]
+      };
+      let at = st.chronoSections.length;
+      const myPos = ids.indexOf(id);
+      for (let k=myPos-1; k>=0; k--){
+        const j = st.chronoSections.findIndex(x => sectionKeyOf(x) === norm(ids[k]));
+        if (j>=0) { at = j+1; break; }
+      }
+      st.chronoSections.splice(at, 0, sec);
+    });
+
+    st.tableLinkCol = (typeof roleIdx==='function') ? roleIdx('refId') : refIdColIndex();
+    if (typeof renderChronoSections==='function') renderChronoSections(); // le wrapper appellera syncAutoBtn
+    if (typeof renderTableEditor==='function') renderTableEditor();
+    if (typeof histCheck==='function') histCheck('');
+
+    toast(missing.length + ' section(s) créée(s) : ' + missing.join(', '));
+  }
+
+  // --- Injection du bouton "✨ Créer les sections manquantes" ---
+  function injectButton(){
+    if (document.getElementById('btn-creer-sections')) return;
+    const target = Array.from(document.querySelectorAll('button'))
+      .find(b => /Nouvelle Section Boîte/i.test(b.textContent));
+    if (!target) { setTimeout(injectButton, 500); return; }
+
+    getAutoBtn();
+
+    const btn = document.createElement('button');
+    btn.id = 'btn-creer-sections';
+    btn.type = 'button';
+    btn.className = target.className;
+    btn.textContent = '✨ Créer les sections manquantes';
+    btn.title = "Crée une section pour chaque Réf. ID du tableau qui n'en a pas encore, dans l'ordre du tableau.";
+    btn.addEventListener('click', run);
+    target.parentElement.insertBefore(btn, target);
+  }
+
+  // --- Point central : on synchronise l'état du bouton à chaque rendu des sections ---
+  function hookRender(){
+    if (window.__autoBtnHooked) return;
+    const orig = window.renderChronoSections;
+    if (typeof orig !== 'function') { setTimeout(hookRender, 300); return; }
+    window.__autoBtnHooked = true;
+    window.renderChronoSections = function(){
+      orig.apply(this, arguments);
+      syncAutoBtn();
+    };
+    // resetState (nouvelle fiche / accueil) : on resynchronise aussi
+    const origReset = window.resetState;
+    if (typeof origReset === 'function') {
+      window.resetState = function(){
+        origReset.apply(this, arguments);
+        setTimeout(syncAutoBtn, 0);
+      };
+    }
+    syncAutoBtn(); // état immédiat au chargement
+  }
+
+  document.readyState==='loading'
+    ? document.addEventListener('DOMContentLoaded', function(){ injectButton(); hookRender(); })
+    : (injectButton(), hookRender());
+})();
+</script>
 </body>
 </html>
